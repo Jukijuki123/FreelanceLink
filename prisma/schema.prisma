@@ -22,7 +22,10 @@ model User {
   avatarUrl String?
   balance   Float    @default(0)
   jobs      Job[]    @relation("CompanyJobs")
-  apps      Application[]
+  apps           Application[]
+  conversations1 Conversation[] @relation("ConversationUser1")
+  conversations2 Conversation[] @relation("ConversationUser2")
+  messages       Message[]
 }
 
 model Job {
@@ -46,4 +49,30 @@ model Application {
   status       String   @default("PENDING")
   proposal     String?
   resumeUrl    String?
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  user1Id   String
+  user2Id   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user1     User      @relation("ConversationUser1", fields: [user1Id], references: [id])
+  user2     User      @relation("ConversationUser2", fields: [user2Id], references: [id])
+  messages  Message[]
+
+  @@unique([user1Id, user2Id])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id])
 }

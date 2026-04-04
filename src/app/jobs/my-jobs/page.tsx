@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { completeProjectAndPayout } from "@/app/actions/payments";
 import { rejectApplication } from "@/app/actions/applications";
+import { initiateChat } from "@/app/actions/chat";
 
 async function getSession() {
   const cookieStore = await cookies();
@@ -138,6 +139,11 @@ export default async function MyJobsPage() {
                             {app.status === "REJECTED" && (
                               <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded">Ditolak</span>
                             )}
+                            <form action={initiateChat.bind(null, app.freelancerId)}>
+                              <button type="submit" className="text-xs font-semibold px-3 py-1.5 border border-blue-300 text-blue-600 bg-white shadow-sm rounded hover:bg-blue-50">
+                                💬 Chat
+                              </button>
+                            </form>
                           </div>
                         </div>
                       ))}

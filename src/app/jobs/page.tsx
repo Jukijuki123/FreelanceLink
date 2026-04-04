@@ -48,22 +48,30 @@ export default async function JobsPage() {
                 <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Saldo ({currentUser.role})</p>
                 <p className="font-bold text-blue-700 text-lg leading-none mt-1">Rp {new Intl.NumberFormat("id-ID").format(currentUser.balance)}</p>
               </div>
-              {currentUser.role === "COMPANY" && (
-                <div className="flex gap-2">
-                  <Link
-                    href="/jobs/my-jobs"
-                    className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md shadow-sm text-blue-600 bg-white hover:bg-blue-50"
-                  >
-                    Dashboard Pelamar
-                  </Link>
-                  <Link
-                    href="/jobs/create"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                  >
-                    Post Lowongan
-                  </Link>
-                </div>
-              )}
+              <div className="flex gap-2">
+                <Link
+                  href="/chat"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  💬 Kotak Pesan
+                </Link>
+                {currentUser.role === "COMPANY" && (
+                  <>
+                    <Link
+                      href="/jobs/my-jobs"
+                      className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md shadow-sm text-blue-600 bg-white hover:bg-blue-50"
+                    >
+                      Dashboard Pelamar
+                    </Link>
+                    <Link
+                      href="/jobs/create"
+                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                    >
+                      Post Lowongan
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>

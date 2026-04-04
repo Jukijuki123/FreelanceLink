@@ -46,7 +46,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">Detail Tagihan</h3>
             <div className="flex justify-between items-center mb-1">
               <span className="text-gray-700">Iklan Lowongan:</span>
-              <span className="font-medium">{job.title}</span>
+              <span className="font-medium text-gray-800">{job.title}</span>
             </div>
             <div className="flex justify-between items-center mb-1 text-sm text-gray-500">
               <span>Budget Proyek:</span>
@@ -71,7 +71,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             <form action={payJobAd.bind(null, jobId)} className="flex flex-col gap-3 pt-2">
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Metode Pembayaran</label>
-                <select className="block w-full border border-gray-300 rounded-md py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white shadow-sm">
+                <select className="block w-full border border-gray-300 text-gray-600 rounded-md py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white shadow-sm">
                   <option>Transfer Bank (BCA Virtual Account)</option>
                   <option>Transfer Bank (Mandiri Virtual Account)</option>
                   <option>E-Wallet (GoPay)</option>
