@@ -55,3 +55,29 @@ export async function applyToJob(formData: FormData) {
 
   redirect("/jobs");
 }
+
+export async function rejectApplication(formData: FormData) {
+  const session = await getSession();
+
+  if (!session || session.role !== "COMPANY") {
+    throw new Error("Hanya Perusahaan yang dapat menolak pelamar.");
+  }
+
+  const appId = formData.get("appId") as string;
+
+  const app = await db.application.findUnique({
+    where: { id: appId },
+    include: { job: true },
+  });
+
+  if (!app || app.job.companyId !== session.userId) {
+    throw new Error("Unauthorized");
+  }
+
+  await db.application.update({
+    where: { id: appId },
+    data: { status: "REJECTED" },
+  });
+
+  redirect("/jobs/my-jobs");
+}

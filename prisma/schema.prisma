@@ -20,6 +20,7 @@ model User {
   skills    String[]
   bio       String?
   avatarUrl String?
+  balance   Float    @default(0)
   jobs      Job[]    @relation("CompanyJobs")
   apps      Application[]
 }

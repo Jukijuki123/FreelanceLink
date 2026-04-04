@@ -15,12 +15,19 @@ async function getSession() {
 
 export default async function JobsPage() {
   const session = await getSession();
+
+  let currentUser = null;
+  if (session) {
+    currentUser = await db.user.findUnique({ where: { id: session.userId } });
+  }
+
   const jobs = await db.job.findMany({
+    where: { isPaidAd: true },
     orderBy: { id: "desc" }, // Simple sorting
     include: { company: true }
   });
 
-  const userApps = session?.role === "FREELANCER" 
+  const userApps = session?.role === "FREELANCER"
     ? await db.application.findMany({ where: { freelancerId: session.userId } })
     : [];
   const appliedJobIds = new Set(userApps.map(app => app.jobId));
@@ -35,20 +42,28 @@ export default async function JobsPage() {
               Temukan proyek menarik atau posting lowongan baru.
             </p>
           </div>
-          {session?.role === "COMPANY" && (
-            <div className="flex gap-2">
-              <Link
-                href="/jobs/my-jobs"
-                className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md shadow-sm text-blue-600 bg-white hover:bg-blue-50"
-              >
-                Dashboard Pelamar
-              </Link>
-              <Link
-                href="/jobs/create"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Post Lowongan
-              </Link>
+          {currentUser && (
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:block text-right bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Saldo ({currentUser.role})</p>
+                <p className="font-bold text-blue-700 text-lg leading-none mt-1">Rp {new Intl.NumberFormat("id-ID").format(currentUser.balance)}</p>
+              </div>
+              {currentUser.role === "COMPANY" && (
+                <div className="flex gap-2">
+                  <Link
+                    href="/jobs/my-jobs"
+                    className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md shadow-sm text-blue-600 bg-white hover:bg-blue-50"
+                  >
+                    Dashboard Pelamar
+                  </Link>
+                  <Link
+                    href="/jobs/create"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Post Lowongan
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>

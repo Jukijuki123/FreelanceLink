@@ -2,6 +2,8 @@ import { db } from "@/lib/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { completeProjectAndPayout } from "@/app/actions/payments";
+import { rejectApplication } from "@/app/actions/applications";
 
 async function getSession() {
   const cookieStore = await cookies();
@@ -51,10 +53,38 @@ export default async function MyJobsPage() {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">{job.title}</h2>
                     <p className="text-sm text-gray-500">Status: {job.status}</p>
+                    {job.status === "OPEN" && !job.isPaidAd && (
+                      <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800 border border-red-200">
+                        Belum Bayar Iklan
+                      </span>
+                    )}
+                    {job.isPaidAd && job.status === "OPEN" && (
+                      <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-800 border border-green-200">
+                        Iklan Aktif
+                      </span>
+                    )}
+                    {job.status === "ONGOING" && (
+                      <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800 border border-blue-200">
+                        Proyek Sedang Berjalan
+                      </span>
+                    )}
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end">
                     <p className="font-bold text-gray-900">Rp {new Intl.NumberFormat("id-ID").format(job.budget)}</p>
-                    <p className="text-sm text-blue-600">{job.apps.length} Pelamar</p>
+                    <p className="text-sm text-blue-600 mb-2">{job.apps.length} Pelamar</p>
+                    {!job.isPaidAd && job.status === "OPEN" && (
+                      <Link href={`/jobs/${job.id}/payment`} className="mt-2 text-xs font-semibold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        Bayar Iklan
+                      </Link>
+                    )}
+                    {job.status === "ONGOING" && (
+                      <form action={completeProjectAndPayout.bind(null, job.id)} className="mt-2 border-t pt-2 text-right">
+                        <button type="submit" className="text-xs font-semibold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                          Selesaikan Proyek & Cairkan Dana (Rp {new Intl.NumberFormat("id-ID").format(job.budget * 0.95)})
+                        </button>
+                        <p className="text-xs text-gray-500 mt-1">Potongan Admin 5% (Rp {new Intl.NumberFormat("id-ID").format(job.budget * 0.05)})</p>
+                      </form>
+                    )}
                   </div>
                 </div>
 
@@ -89,8 +119,25 @@ export default async function MyJobsPage() {
                           </div>
 
                           <div className="mt-4 flex gap-2">
-                            <button className="text-xs font-semibold px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700">Terima & Chat</button>
-                            <button className="text-xs font-semibold px-3 py-1.5 border border-gray-300 text-gray-700 rounded hover:bg-gray-100">Tolak</button>
+                            {job.status === "OPEN" && app.status === "PENDING" && (
+                              <div className="flex gap-2">
+                                <Link href={`/jobs/${job.id}/escrow/${app.id}`} className="text-xs font-semibold px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700">
+                                  Terima & Setor Escrow
+                                </Link>
+                                <form action={rejectApplication}>
+                                  <input type="hidden" name="appId" value={app.id} />
+                                  <button type="submit" className="text-xs font-semibold px-3 py-1.5 border border-red-300 text-red-700 rounded hover:bg-red-50">
+                                    Tolak
+                                  </button>
+                                </form>
+                              </div>
+                            )}
+                            {app.status === "ACCEPTED" && (
+                              <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">Pelamar Terpilih</span>
+                            )}
+                            {app.status === "REJECTED" && (
+                              <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded">Ditolak</span>
+                            )}
                           </div>
                         </div>
                       ))}
