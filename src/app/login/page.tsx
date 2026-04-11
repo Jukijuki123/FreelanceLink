@@ -1,15 +1,29 @@
 import { loginUser } from "@/app/actions/login";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-8 sm:py-12 relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute top-0 left-0 w-full h-64 bg-blue-600 rounded-b-[100px] md:rounded-b-[200px] -z-10"></div>
+      
+      <Link href="/" className="absolute top-6 left-6 text-white/80 hover:text-white flex items-center gap-2 font-medium transition">
+        <ArrowLeft className="w-5 h-5" />
+        <span className="hidden sm:inline">Kembali ke Beranda</span>
+      </Link>
+
+      <div className="w-full max-w-md space-y-6 sm:space-y-8 bg-white p-6 sm:p-10 rounded-2xl shadow-xl shadow-blue-900/5 border border-gray-100">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+          <div className="flex justify-center mb-6">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white text-2xl font-black shadow-md">
+              F
+            </div>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900">
             Masuk FreelanceLink
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 font-medium">
             Masuk untuk memulai petualangan Anda.
           </p>
         </div>
