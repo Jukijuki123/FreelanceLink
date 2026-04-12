@@ -19,7 +19,7 @@ export async function createJob(formData: FormData) {
   const session = await getSession();
 
   if (!session || session.role !== "COMPANY") {
-    throw new Error("Hanya akun Perusahaan yang dapat memposting lowongan.");
+    return { error: "Hanya akun Perusahaan yang dapat memposting lowongan." };
   }
 
   const title = formData.get("title") as string;
@@ -28,13 +28,26 @@ export async function createJob(formData: FormData) {
   const budget = parseFloat(budgetStr);
 
   if (!title || !description || isNaN(budget)) {
-    throw new Error("Data lowongan tidak lengkap.");
+    return { error: "Data lowongan tidak lengkap." };
   }
 
+  const generateSlug = (text: string) => {
+    return text.toString().toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+  
+  const baseSlug = generateSlug(title) || 'job';
+  const randomStr = Math.random().toString(36).substring(2, 6);
+  const slug = `${baseSlug}-${randomStr}`;
+
   // Simpan ke Database
-  await db.job.create({
+  const newJob = await db.job.create({
     data: {
       title,
+      slug,
       description,
       budget,
       companyId: session.userId,
@@ -43,5 +56,5 @@ export async function createJob(formData: FormData) {
     },
   });
 
-  redirect("/jobs");
+  return { success: true, redirectUrl: `/jobs/${newJob.slug}/payment` };
 }

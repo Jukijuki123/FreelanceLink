@@ -6,8 +6,10 @@ import { completeProjectAndPayout } from "@/app/actions/payments";
 import { rejectApplication } from "@/app/actions/applications";
 import { initiateChat } from "@/app/actions/chat";
 
-export default async function MyJobsPage() {
+export default async function MyJobsPage(props: { searchParams: Promise<{ success?: string }> }) {
   const session = await getSession();
+  const searchParams = await props.searchParams;
+  const isAdPaidSuccess = searchParams.success === "ad_paid";
 
   if (!session || session.role !== "COMPANY") {
     redirect("/login");
@@ -33,6 +35,18 @@ export default async function MyJobsPage() {
           Kelola lowongan dan pelamar Anda.
         </p>
       </div>
+
+      {isAdPaidSuccess && (
+        <div className="mb-8 p-4 bg-emerald-50 border border-emerald-500 rounded-xl flex gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="text-emerald-500">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <div>
+            <h3 className="text-emerald-800 font-bold">Transaksi Berhasil! 🎉</h3>
+            <p className="text-emerald-700 text-sm mt-0.5">Paket Promosi Iklan telah diaktifkan secara lunas. Lowongan Anda kini sudah mengudara di Papan Publik dan masa tenggang telah ditetapkan secara otomatis!</p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
         {myJobs.length === 0 ? (
@@ -67,7 +81,7 @@ export default async function MyJobsPage() {
                   <p className="font-black text-emerald-600 text-lg">Rp {new Intl.NumberFormat("id-ID").format(job.budget)}</p>
                   <p className="text-sm text-blue-600 font-semibold mb-2">{job.apps.length} Pelamar</p>
                   {!job.isPaidAd && job.status === "OPEN" && (
-                    <Link href={`/jobs/${job.id}/payment`} className="mt-2 text-xs font-bold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <Link href={`/jobs/${job.slug}/payment`} className="mt-2 text-xs font-bold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                       Bayar Iklan
                     </Link>
                   )}
@@ -115,7 +129,7 @@ export default async function MyJobsPage() {
                         <div className="mt-5 flex gap-3 pt-4 border-t border-gray-50">
                           {job.status === "OPEN" && app.status === "PENDING" && (
                             <div className="flex gap-2">
-                              <Link href={`/jobs/${job.id}/escrow/${app.id}`} className="text-xs font-bold px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 shadow shadow-emerald-200 transition">
+                              <Link href={`/jobs/${job.slug}/escrow/${app.id}`} className="text-xs font-bold px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 shadow shadow-emerald-200 transition">
                                 Terima & Setor Escrow
                               </Link>
                               <form action={rejectApplication}>

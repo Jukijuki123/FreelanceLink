@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  Briefcase, 
-  MessageSquare, 
-  PlusCircle, 
-  LayoutDashboard, 
+import {
+  Briefcase,
+  MessageSquare,
+  PlusCircle,
+  LayoutDashboard,
   LogOut,
   UserCircle
 } from "lucide-react";
 import { logoutUser } from "@/app/actions/logout";
 import { useTransition } from "react";
+import Image from "next/image";
 
 type SidebarProps = {
   role: "FREELANCER" | "COMPANY";
@@ -41,22 +42,26 @@ export default function Sidebar({ role, onClose }: SidebarProps) {
   // Active state styling using White/Blue/Orange/Green combination
   const getLinkClasses = (href: string) => {
     const isActive = pathname === href || pathname.startsWith(`${href}/`);
-    return `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 font-medium ${
-      isActive 
-        ? "bg-blue-600 text-white shadow-md shadow-blue-200" 
-        : "text-gray-600 bg-white hover:text-blue-600 hover:shadow-sm"
-    }`;
+    return `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 font-medium ${isActive
+      ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+      : "text-gray-600 bg-white hover:text-blue-600 hover:shadow-sm"
+      }`;
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-gray-100 bg-gray-50 flex flex-col h-full sticky top-0">
+    <aside className="w-64 shrink-0 border-r border-gray-100 bg-gray-50 flex flex-col h-full sticky top-0">
       {/* Brand area */}
       <div className="h-16 flex items-center px-6 border-b border-gray-100 bg-white">
         <div className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-gray-900">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white shadow-sm">
-            F
-          </div>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-900">
+          <Image
+            src="/logo.png"
+            alt="FreelanceLink Logo"
+            width={60}
+            height={60}
+            priority
+            className="object-contain"
+          />
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-700 to-blue-900">
             FreelanceLink
           </span>
         </div>
@@ -68,9 +73,9 @@ export default function Sidebar({ role, onClose }: SidebarProps) {
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Link 
-              key={item.href} 
-              href={item.href} 
+            <Link
+              key={item.href}
+              href={item.href}
               className={getLinkClasses(item.href)}
               onClick={onClose}
             >

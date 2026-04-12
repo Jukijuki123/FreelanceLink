@@ -49,6 +49,21 @@ export async function acceptAndDeposit(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
+  // 1. Fetch Company Balance
+  const companyUser = await db.user.findUnique({
+    where: { id: session.userId }
+  });
+
+  if (!companyUser) {
+    throw new Error("User not found");
+  }
+
+  // 2. Check if balance is sufficient
+  if (companyUser.balance < app.job.budget) {
+    throw new Error(`Saldo tidak mencukupi. Anda butuh Rp ${new Intl.NumberFormat("id-ID").format(app.job.budget)} untuk menahan dana Escrow.`);
+  }
+
+  // 3. Atomically Update Applications, Job Status, and Deduct Company Balance
   await db.$transaction([
     db.application.update({
       where: { id: appId },
@@ -61,6 +76,10 @@ export async function acceptAndDeposit(formData: FormData) {
     db.job.update({
       where: { id: app.jobId },
       data: { status: "ONGOING" },
+    }),
+    db.user.update({
+      where: { id: session.userId },
+      data: { balance: { decrement: app.job.budget } },
     }),
   ]);
 

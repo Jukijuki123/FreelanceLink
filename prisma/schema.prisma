@@ -30,11 +30,14 @@ model User {
 
 model Job {
   id          String   @id @default(uuid())
+  slug        String   @unique @default(uuid())
   title       String
   description String
   budget      Float
   status      String   @default("OPEN")
   isPaidAd    Boolean  @default(false)
+  expiresAt   DateTime? // Tanggal kedaluwarsa iklan
+  adFeePaid   Float    @default(0) // Biaya yang telah dibayarkan oleh perusahaan untuk iklan ini
   companyId   String
   company     User     @relation("CompanyJobs", fields: [companyId], references: [id])
   apps        Application[]

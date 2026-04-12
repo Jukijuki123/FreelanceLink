@@ -1,4 +1,5 @@
 import { Bell, UserCircle, Wallet, Menu } from "lucide-react";
+import TopUpModal from "@/components/TopUpModal";
 
 type TopbarProps = {
   user: {
@@ -26,8 +27,9 @@ export default function Topbar({ user, onMenuClick }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-3 sm:gap-6">
-        {/* Balance Display (Green accent for money) */}
-        <div className="flex items-center gap-2 sm:gap-3 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full shadow-sm">
+        {/* Balance Display (Green accent for money) - Now Clickable for TopUp */}
+        <div className="relative flex items-center gap-2 sm:gap-3 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition">
+          <TopUpModal />
           <Wallet className="w-4 h-4 text-emerald-600 hidden sm:block" />
           <div className="flex flex-col">
             <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-emerald-600 leading-none">Saldo</span>

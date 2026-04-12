@@ -13,7 +13,7 @@ export async function registerUser(formData: FormData) {
 
   // 1. Validasi Input Sederhana
   if (!name || !email || !password || !role) {
-    throw new Error("Semua kolom wajib diisi.");
+    return { error: "Semua kolom wajib diisi." };
   }
 
   // 2. Cek Email Unik
@@ -22,7 +22,7 @@ export async function registerUser(formData: FormData) {
   });
 
   if (existingUser) {
-    throw new Error("Email sudah terdaftar.");
+    return { error: "Email sudah terdaftar." };
   }
 
   // 3. Hashing Password
@@ -42,6 +42,6 @@ export async function registerUser(formData: FormData) {
     },
   });
 
-  // 6. Redirect ke Login
-  redirect("/login");
+  // 6. Return response form success
+  return { success: true, redirectUrl: "/login" };
 }

@@ -10,7 +10,7 @@ export async function loginUser(formData: FormData) {
   const password = formData.get("password") as string;
 
   if (!email || !password) {
-    throw new Error("Email dan password wajib diisi.");
+    return { error: "Email dan password wajib diisi." };
   }
 
   // 1. Cari user di database
@@ -19,14 +19,14 @@ export async function loginUser(formData: FormData) {
   });
 
   if (!user) {
-    throw new Error("Email atau password salah.");
+    return { error: "Email atau password salah." };
   }
 
   // 2. Verifikasi password
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new Error("Email atau password salah.");
+    return { error: "Email atau password salah." };
   }
 
   // 3. Set Session Cookie (Simpel)
@@ -42,6 +42,6 @@ export async function loginUser(formData: FormData) {
     path: "/",
   });
 
-  // 4. Redirect ke Dashboard/Jobs
-  redirect("/jobs");
+  // 4. Return success
+  return { success: true, redirectUrl: "/jobs" };
 }

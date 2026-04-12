@@ -15,8 +15,8 @@ async function getSession() {
   }
 }
 
-export default async function ApplyPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function ApplyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const session = await getSession();
 
   if (!session || session.role !== "FREELANCER") {
@@ -24,7 +24,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
   }
 
   const job = await db.job.findUnique({
-    where: { id },
+    where: { slug: slug },
     include: { company: true },
   });
 
@@ -35,7 +35,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ id: stri
   // Cek apakah sudah pernah melamar
   const existingApp = await db.application.findFirst({
     where: {
-      jobId: id,
+      jobId: job.id,
       freelancerId: session.userId,
     },
   });

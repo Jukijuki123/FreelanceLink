@@ -1,7 +1,34 @@
+"use client";
+
 import { createJob } from "@/app/actions/jobs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function CreateJobPage() {
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const loadingToast = toast.loading("Mem-posting lowongan...");
+    
+    try {
+      const res = await createJob(formData);
+      
+      if (res?.error) {
+        toast.error(res.error, { id: loadingToast });
+      } else if (res?.success) {
+        toast.success("Lowongan berhasil dibuat!", { id: loadingToast });
+        setTimeout(() => {
+          router.push(res.redirectUrl || "/jobs");
+        }, 1000);
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan sistem.", { id: loadingToast });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100">
@@ -14,7 +41,7 @@ export default function CreateJobPage() {
           </p>
         </div>
 
-        <form action={createJob} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">Judul Lowongan</label>
             <input

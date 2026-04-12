@@ -6,7 +6,10 @@ export default async function JobsPage() {
   const session = await getSession();
 
   const jobs = await db.job.findMany({
-    where: { isPaidAd: true },
+    where: { 
+      isPaidAd: true,
+      expiresAt: { gt: new Date() }
+    },
     orderBy: { id: "desc" },
     include: { company: true }
   });
@@ -18,11 +21,21 @@ export default async function JobsPage() {
 
   return (
     <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Papan Lowongan Kerja</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Temukan proyek menarik atau posting lowongan baru.
-        </p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Papan Lowongan Kerja</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Temukan proyek menarik atau posting lowongan baru.
+          </p>
+        </div>
+        {session?.role === "COMPANY" && (
+          <Link
+            href="/jobs/create"
+            className="inline-flex items-center justify-center px-5 py-2.5 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95"
+          >
+            + Buat Lowongan Baru
+          </Link>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -61,14 +74,14 @@ export default async function JobsPage() {
                 </div>
                 <div className="flex gap-2">
                   <Link
-                    href={`/jobs/${job.id}`}
+                    href={`/jobs/${job.slug}`}
                     className="inline-flex items-center px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:text-blue-600 transition"
                   >
                     Detail
                   </Link>
                   {session?.role === "FREELANCER" && !appliedJobIds.has(job.id) && (
                     <Link
-                      href={`/jobs/${job.id}/apply`}
+                      href={`/jobs/${job.slug}/apply`}
                       className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition"
                     >
                       Lamar

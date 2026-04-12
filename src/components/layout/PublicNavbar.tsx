@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
+import Image from 'next/image'
 
 export default async function PublicNavbar() {
   const session = await getSession();
@@ -10,24 +11,29 @@ export default async function PublicNavbar() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center text-white text-xl font-black shadow-md">
-              F
-            </div>
-            <span className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-900">
+            <Image
+              src="/logo.png"
+              alt="FreelanceLink Logo"
+              width={45}
+              height={45}
+              priority
+              className="object-contain"
+            />
+            <span className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-blue-700 to-blue-900">
               FreelanceLink
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            <Link href="#mengapa-kami" className="text-gray-600 hover:text-blue-600 font-medium transition">
+              Tentang Kami
+            </Link>
             <Link href="#cara-kerja" className="text-gray-600 hover:text-blue-600 font-medium transition">
               Cara Kerja
             </Link>
             <Link href="#kategori" className="text-gray-600 hover:text-blue-600 font-medium transition">
               Cari Jasa
-            </Link>
-            <Link href="#mengapa-kami" className="text-gray-600 hover:text-blue-600 font-medium transition">
-              Tentang Kami
             </Link>
           </div>
 
@@ -50,7 +56,7 @@ export default async function PublicNavbar() {
                 </Link>
                 <Link
                   href="/register"
-                  className="px-6 py-2.5 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all active:scale-95 text-sm sm:text-base"
+                  className="px-6 py-2 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all active:scale-95 text-sm sm:text-base"
                 >
                   Daftar Gratis
                 </Link>

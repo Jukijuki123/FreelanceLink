@@ -11,9 +11,9 @@ async function getSession() {
   return JSON.parse(sessionValue);
 }
 
-export default async function EscrowPaymentPage({ params }: { params: Promise<{ id: string, appId: string }> }) {
+export default async function EscrowPaymentPage({ params }: { params: Promise<{ slug: string, appId: string }> }) {
   const resolvedParams = await params;
-  const jobId = resolvedParams.id;
+  const slug = resolvedParams.slug;
   const appId = resolvedParams.appId;
 
   const session = await getSession();
@@ -22,7 +22,7 @@ export default async function EscrowPaymentPage({ params }: { params: Promise<{ 
   }
 
   const job = await db.job.findUnique({
-    where: { id: jobId },
+    where: { slug },
   });
 
   const app = await db.application.findUnique({
@@ -30,7 +30,7 @@ export default async function EscrowPaymentPage({ params }: { params: Promise<{ 
     include: { freelancer: true },
   });
 
-  if (!job || job.companyId !== session.userId || !app || app.jobId !== jobId) {
+  if (!job || job.companyId !== session.userId || !app || app.jobId !== job.id) {
     redirect("/jobs/my-jobs");
   }
 
@@ -77,7 +77,7 @@ export default async function EscrowPaymentPage({ params }: { params: Promise<{ 
             <form action={acceptAndDeposit} className="flex flex-col gap-3 pt-2">
               <div className="mb-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Metode Pembayaran</label>
-                <select className="block w-full border border-gray-300 rounded-md py-2.5 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm bg-white shadow-sm">
+                <select className="block w-full border border-gray-300 text-gray-600 rounded-md py-2.5 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm bg-white shadow-sm">
                   <option>Transfer Bank (BCA Virtual Account)</option>
                   <option>Transfer Bank (Mandiri Virtual Account)</option>
                   <option>E-Wallet (GoPay)</option>
