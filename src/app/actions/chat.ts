@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { pusherServer } from "@/lib/pusher";
 
-async function getSession() {
+export async function getSession() {
   const cookieStore = await cookies();
   const sessionValue = cookieStore.get("session")?.value;
   if (!sessionValue) return null;
