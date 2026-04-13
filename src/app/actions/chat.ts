@@ -12,6 +12,42 @@ export async function getSession() {
   return JSON.parse(sessionValue);
 }
 
+export async function getUnreadMessagesCount() {
+  const session = await getSession();
+  if (!session) return 0;
+
+  const count = await db.message.count({
+    where: {
+      conversation: {
+        OR: [
+          { user1Id: session.userId },
+          { user2Id: session.userId }
+        ]
+      },
+      senderId: { not: session.userId },
+      isRead: false
+    }
+  });
+
+  return count;
+}
+
+export async function markConversationAsRead(conversationId: string) {
+  const session = await getSession();
+  if (!session) return;
+
+  await db.message.updateMany({
+    where: {
+      conversationId,
+      senderId: { not: session.userId },
+      isRead: false
+    },
+    data: {
+      isRead: true
+    }
+  });
+}
+
 export async function getConversations() {
   const session = await getSession();
   if (!session) redirect("/login");

@@ -96,7 +96,7 @@ export function ChatClient({
                   : "bg-white text-gray-800 border border-gray-100 rounded-tl-none"
                   }`}
               >
-                <p className="text-[15px] leading-relaxed break-words">
+                <p className="text-[15px] leading-relaxed wrap-break-word">
                   {msg.content}
                 </p>
                 <div

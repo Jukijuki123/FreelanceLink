@@ -8,9 +8,9 @@ export default async function AdminLoginPage(props: { searchParams: Promise<{ er
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 selection:bg-indigo-500">
       <div className="w-full max-w-md space-y-8 bg-slate-900 border border-slate-800 p-8 sm:p-10 rounded-2xl shadow-2xl relative overflow-hidden">
-        
+
         {/* Glow effect at top */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500"></div>
+        <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-red-500 via-orange-500 to-red-500"></div>
 
         <div className="text-center">
           <div className="flex justify-center mb-6">

@@ -60,7 +60,7 @@ export default async function AdminPanel() {
               <p className="text-slate-400 text-sm font-medium">Halaman Laporan Arus Kas Eksklusif Pemilik Aplikasi.</p>
             </div>
           </div>
-          
+
           <form action={adminLogout}>
             <button type="submit" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 text-sm font-bold transition border border-slate-700 hover:border-red-500/50">
               <LogOut className="w-4 h-4" />
@@ -71,7 +71,7 @@ export default async function AdminPanel() {
 
         {/* Notifikasi Rahasia */}
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex gap-3 items-start text-blue-200">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
           <p className="text-sm">Halaman ini <strong>TIDAK DAPAT DIBACA</strong> oleh publik. Nilai yang ditampilkan adalah kalkulasi mutakhir (Real-Time) berdasar jumlah anggaran pada database di seluruh perputaran aplikasi.</p>
         </div>
 

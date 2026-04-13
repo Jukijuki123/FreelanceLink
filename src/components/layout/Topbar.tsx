@@ -1,5 +1,6 @@
 import { Bell, UserCircle, Wallet, Menu } from "lucide-react";
 import TopUpModal from "@/components/TopUpModal";
+import Link from "next/link";
 
 type TopbarProps = {
   user: {
@@ -7,6 +8,7 @@ type TopbarProps = {
     role: string;
     balance: number;
     avatarUrl?: string | null;
+    unreadCount?: number;
   };
   onMenuClick?: () => void;
 };
@@ -16,7 +18,7 @@ export default function Topbar({ user, onMenuClick }: TopbarProps) {
     <header className="h-16 border-b border-gray-100 bg-white sticky top-0 z-10 w-full flex items-center justify-between px-4 sm:px-6 shadow-sm">
       <div className="flex items-center gap-3 sm:gap-4">
         {/* Hamburger Menu for Mobile */}
-        <button 
+        <button
           onClick={onMenuClick}
           className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg lg:hidden transition"
         >
@@ -41,11 +43,15 @@ export default function Topbar({ user, onMenuClick }: TopbarProps) {
 
         {/* Action icons */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition">
+          <Link href="/chat" className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition">
             <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500 ring-2 ring-white"></span>
-          </button>
-          
+            {user.unreadCount !== undefined && user.unreadCount > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                {user.unreadCount > 9 ? "9+" : user.unreadCount}
+              </span>
+            )}
+          </Link>
+
           <div className="w-px h-6 bg-gray-200 hidden sm:block"></div>
 
           {/* User Profile */}

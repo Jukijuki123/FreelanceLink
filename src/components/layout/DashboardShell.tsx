@@ -10,6 +10,7 @@ type SessionUser = {
   role: "FREELANCER" | "COMPANY";
   balance: number;
   avatarUrl?: string | null;
+  unreadCount?: number;
 };
 
 export default function DashboardShell({
