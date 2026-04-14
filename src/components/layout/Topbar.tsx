@@ -55,7 +55,7 @@ export default function Topbar({ user, onMenuClick }: TopbarProps) {
           <div className="w-px h-6 bg-gray-200 hidden sm:block"></div>
 
           {/* User Profile */}
-          <button className="flex items-center gap-2 sm:pl-2 hover:opacity-80 transition">
+          <Link href="/profile" className="flex items-center gap-2 sm:pl-2 hover:opacity-80 transition">
             <div className="hidden md:flex flex-col items-end">
               <span className="text-sm font-bold text-gray-800 leading-none">{user.name}</span>
               <span className="text-xs font-semibold text-blue-600 uppercase tracking-wide mt-1">
@@ -67,7 +67,7 @@ export default function Topbar({ user, onMenuClick }: TopbarProps) {
             ) : (
               <UserCircle className="w-8 h-8 sm:w-9 sm:h-9 text-gray-300" />
             )}
-          </button>
+          </Link>
         </div>
       </div>
     </header>
