@@ -16,7 +16,50 @@ async function getSession() {
   }
 }
 
+export async function buyJobPackage(jobId: string, days: number, price: number) {
+  const session = await getSession();
+  if (!session || session.role !== "COMPANY") {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await db.user.findUnique({ where: { id: session.userId } });
+  if (!user || user.balance < price) {
+    throw new Error("Saldo tidak mencukupi.");
+  }
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + days);
+
+  await db.$transaction([
+    db.job.update({
+      where: { id: jobId },
+      data: { 
+        isPaidAd: true, 
+        expiresAt,
+        adFeePaid: { increment: price }
+      },
+    }),
+    db.user.update({
+      where: { id: session.userId },
+      data: { balance: { decrement: price } },
+    }),
+    db.transaction.create({
+      data: {
+        userId: session.userId,
+        type: "BUY_AD",
+        amount: price,
+        description: `Promosi lowongan kerja selama ${days} hari`,
+      }
+    })
+  ]);
+
+  revalidatePath("/jobs");
+  revalidatePath("/jobs/my-jobs");
+  redirect("/jobs/my-jobs?success=ad_paid");
+}
+
 export async function payJobAd(jobId: string) {
+  // Fungsi lama tetap dipertahankan jika ada yang menggunakan
   const session = await getSession();
   if (!session || session.role !== "COMPANY") {
     throw new Error("Unauthorized");

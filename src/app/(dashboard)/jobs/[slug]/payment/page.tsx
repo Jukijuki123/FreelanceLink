@@ -1,8 +1,7 @@
 import { db } from "@/lib/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { payJobAd } from "@/app/actions/payments";
-import { buyJobPackage } from "@/app/actions/ads";
+import { payJobAd, buyJobPackage } from "@/app/actions/payments";
 import Link from "next/link";
 
 async function getSession() {
