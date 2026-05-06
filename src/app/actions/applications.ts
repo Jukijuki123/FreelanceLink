@@ -1,19 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-
-async function getSession() {
-  const cookieStore = await cookies();
-  const sessionValue = cookieStore.get("session")?.value;
-  if (!sessionValue) return null;
-  try {
-    return JSON.parse(sessionValue);
-  } catch (e) {
-    return null;
-  }
-}
 
 export async function applyToJob(formData: FormData) {
   const session = await getSession();
@@ -24,31 +14,27 @@ export async function applyToJob(formData: FormData) {
 
   const jobId = formData.get("jobId") as string;
   const proposal = formData.get("proposal") as string;
-  const resumeUrl = formData.get("resumeUrl") as string; // Untuk MVP, bisa link GDrive/Dropbox
+  const resumeUrl = formData.get("resumeUrl") as string;
 
   if (!jobId || !proposal) {
-    throw new Error("Lengkapi data lamaran (Proposal wajib diisi).");
+    throw new Error("Proposal wajib diisi.");
   }
 
-  // 1. Cek apakah sudah pernah melamar
+  // Cek duplikasi lamaran
   const existingApp = await db.application.findFirst({
-    where: {
-      jobId,
-      freelancerId: session.userId,
-    },
+    where: { jobId, freelancerId: session.userId },
   });
 
   if (existingApp) {
     throw new Error("Anda sudah melamar pekerjaan ini.");
   }
 
-  // 2. Simpan Lamaran
   await db.application.create({
     data: {
       jobId,
       freelancerId: session.userId,
       proposal,
-      resumeUrl,
+      resumeUrl: resumeUrl || null,
       status: "PENDING",
     },
   });
@@ -56,12 +42,13 @@ export async function applyToJob(formData: FormData) {
   redirect("/jobs");
 }
 
-export async function rejectApplication(formData: FormData) {
+/**
+ * Perusahaan memindahkan status pelamar ke INTERVIEW.
+ * Ini membuka akses chat langsung dari action ini (tidak perlu redirect ke halaman lain).
+ */
+export async function moveToInterview(formData: FormData) {
   const session = await getSession();
-
-  if (!session || session.role !== "COMPANY") {
-    throw new Error("Hanya Perusahaan yang dapat menolak pelamar.");
-  }
+  if (!session || session.role !== "COMPANY") throw new Error("Unauthorized");
 
   const appId = formData.get("appId") as string;
 
@@ -70,14 +57,33 @@ export async function rejectApplication(formData: FormData) {
     include: { job: true },
   });
 
-  if (!app || app.job.companyId !== session.userId) {
-    throw new Error("Unauthorized");
-  }
+  if (!app || app.job.companyId !== session.userId) throw new Error("Unauthorized");
+
+  await db.application.update({
+    where: { id: appId },
+    data: { status: "INTERVIEW" },
+  });
+
+  revalidatePath("/jobs/my-jobs");
+}
+
+export async function rejectApplication(formData: FormData) {
+  const session = await getSession();
+  if (!session || session.role !== "COMPANY") throw new Error("Unauthorized");
+
+  const appId = formData.get("appId") as string;
+
+  const app = await db.application.findUnique({
+    where: { id: appId },
+    include: { job: true },
+  });
+
+  if (!app || app.job.companyId !== session.userId) throw new Error("Unauthorized");
 
   await db.application.update({
     where: { id: appId },
     data: { status: "REJECTED" },
   });
 
-  redirect("/jobs/my-jobs");
+  revalidatePath("/jobs/my-jobs");
 }

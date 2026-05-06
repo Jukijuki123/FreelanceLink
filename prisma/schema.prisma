@@ -6,54 +6,56 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  FREELANCER
-  COMPANY
-}
-
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role
-  skills    String[]
-  bio       String?
-  avatarUrl String?
-  balance   Float    @default(0)
-  location  String?
-  website   String?
-  jobs      Job[]    @relation("CompanyJobs")
+  id             String         @id @default(uuid())
+  email          String         @unique
+  password       String
+  name           String
+  role           Role
+  skills         String[]
+  bio            String?
+  avatarUrl      String?
+  balance        Float          @default(0)
+  location       String?
+  website        String?
+  // Data Rekening Bank (hanya terlihat oleh Freelancer itu sendiri & Admin)
+  bankName       String?
+  accountNumber  String?
+  accountHolder  String?
   apps           Application[]
   conversations1 Conversation[] @relation("ConversationUser1")
   conversations2 Conversation[] @relation("ConversationUser2")
+  jobs           Job[]          @relation("CompanyJobs")
   messages       Message[]
+  transactions   Transaction[]
+  ads            Advertisement[]
 }
 
 model Job {
-  id          String   @id @default(uuid())
-  slug        String   @unique @default(uuid())
+  id          String        @id @default(uuid())
+  slug        String        @unique @default(uuid())
   title       String
   description String
   budget      Float
-  status      String   @default("OPEN")
-  isPaidAd    Boolean  @default(false)
-  expiresAt   DateTime? // Tanggal kedaluwarsa iklan
-  adFeePaid   Float    @default(0) // Biaya yang telah dibayarkan oleh perusahaan untuk iklan ini
+  status      String        @default("OPEN")
+  isPaidAd    Boolean       @default(false)
+  expiresAt   DateTime?
+  adFeePaid   Float         @default(0)
   companyId   String
-  company     User     @relation("CompanyJobs", fields: [companyId], references: [id])
   apps        Application[]
+  company     User          @relation("CompanyJobs", fields: [companyId], references: [id])
 }
 
+// Status: PENDING | INTERVIEW | ACCEPTED | REJECTED
 model Application {
-  id           String   @id @default(uuid())
+  id           String  @id @default(uuid())
   jobId        String
-  job          Job      @relation(fields: [jobId], references: [id])
   freelancerId String
-  freelancer   User     @relation(fields: [freelancerId], references: [id])
-  status       String   @default("PENDING")
+  status       String  @default("PENDING")
   proposal     String?
-  resumeUrl    String?
+  resumeUrl    String? // URL file di Supabase Storage (ZIP/PDF portofolio)
+  freelancer   User    @relation(fields: [freelancerId], references: [id])
+  job          Job     @relation(fields: [jobId], references: [id])
 }
 
 model Conversation {
@@ -62,7 +64,6 @@ model Conversation {
   user2Id   String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-
   user1     User      @relation("ConversationUser1", fields: [user1Id], references: [id])
   user2     User      @relation("ConversationUser2", fields: [user2Id], references: [id])
   messages  Message[]
@@ -77,7 +78,33 @@ model Message {
   content        String
   isRead         Boolean      @default(false)
   createdAt      DateTime     @default(now())
-
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender         User         @relation(fields: [senderId], references: [id])
+}
+
+enum Role {
+  FREELANCER
+  COMPANY
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // "DEPOSIT_ESCROW", "PAYOUT", "BUY_AD"
+  amount      Float
+  description String
+  status      String   @default("SUCCESS")
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Advertisement {
+  id          String   @id @default(uuid())
+  companyId   String
+  imageUrl    String
+  linkUrl     String?
+  status      String   @default("ACTIVE") // "ACTIVE", "EXPIRED"
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  company     User     @relation(fields: [companyId], references: [id])
 }

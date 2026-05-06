@@ -35,7 +35,8 @@ export default async function EscrowPaymentPage({ params }: { params: Promise<{ 
   }
 
   // Jika sudah tidak open, kembali ke dashboard
-  if (job.status !== "OPEN" || app.status !== "PENDING") {
+  const allowedAppStatuses = ["PENDING", "INTERVIEW"];
+  if (job.status !== "OPEN" || !allowedAppStatuses.includes(app.status)) {
     redirect("/jobs/my-jobs");
   }
 
@@ -52,11 +53,11 @@ export default async function EscrowPaymentPage({ params }: { params: Promise<{ 
             <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">Detail Escrow</h3>
             <div className="flex justify-between items-center mb-1">
               <span className="text-gray-700">Proyek:</span>
-              <span className="font-medium text-right max-w-[200px] truncate">{job.title}</span>
+              <span className="font-medium text-gray-600 text-right max-w-[200px] truncate">{job.title}</span>
             </div>
             <div className="flex justify-between items-center mb-1">
               <span className="text-gray-700">Freelancer:</span>
-              <span className="font-medium text-right">{app.freelancer.name}</span>
+              <span className="font-medium text-gray-600 text-right">{app.freelancer.name}</span>
             </div>
             <div className="border-t my-3"></div>
             <div className="flex justify-between items-center text-lg font-bold text-gray-900">

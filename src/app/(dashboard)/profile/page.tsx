@@ -26,6 +26,10 @@ export default async function ProfilePage() {
     skills: u.skills || [],
     location: u.location || null,
     website: u.website || null,
+    // Bank account — only passed to own profile component
+    bankName: u.bankName || null,
+    accountNumber: u.accountNumber || null,
+    accountHolder: u.accountHolder || null,
   };
 
   return (

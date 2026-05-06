@@ -81,6 +81,14 @@ export async function acceptAndDeposit(formData: FormData) {
       where: { id: session.userId },
       data: { balance: { decrement: app.job.budget } },
     }),
+    db.transaction.create({
+      data: {
+        userId: session.userId,
+        type: "DEPOSIT_ESCROW",
+        amount: app.job.budget,
+        description: `Deposit Escrow untuk proyek: ${app.job.title}`,
+      }
+    })
   ]);
 
   revalidatePath("/jobs/my-jobs");
@@ -119,6 +127,14 @@ export async function completeProjectAndPayout(jobId: string) {
       where: { id: acceptedApp.freelancerId },
       data: { balance: { increment: netPayout } },
     }),
+    db.transaction.create({
+      data: {
+        userId: acceptedApp.freelancerId,
+        type: "PAYOUT",
+        amount: netPayout,
+        description: `Pencairan dana proyek: ${job.title} (setelah potongan admin 5%)`,
+      }
+    })
   ]);
 
   revalidatePath("/jobs/my-jobs");

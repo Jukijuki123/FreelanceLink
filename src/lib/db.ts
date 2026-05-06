@@ -7,9 +7,10 @@ declare global {
 }
 
 const getClient = () => {
-  const connectionString = process.env.DATABASE_URL;
+  // Gunakan DIRECT_URL (port 5432) untuk runtime karena pooler (6543) tidak stabil
+  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error("DATABASE_URL environment variable is not set.");
+    throw new Error("DATABASE_URL atau DIRECT_URL environment variable tidak diset.");
   }
 
   const pool = new Pool({ connectionString });

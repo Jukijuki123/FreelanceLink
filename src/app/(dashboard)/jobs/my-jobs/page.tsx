@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { completeProjectAndPayout } from "@/app/actions/payments";
-import { rejectApplication } from "@/app/actions/applications";
+import { rejectApplication, moveToInterview } from "@/app/actions/applications";
 import { initiateChat } from "@/app/actions/chat";
 
 export default async function MyJobsPage(props: { searchParams: Promise<{ success?: string }> }) {
@@ -106,9 +106,18 @@ export default async function MyJobsPage(props: { searchParams: Promise<{ succes
                       <div key={app.id} className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition">
                         <div className="flex justify-between items-start mb-3">
                           <h4 className="font-extrabold text-gray-900 text-lg">{app.freelancer.name}</h4>
-                          <span className="text-xs font-bold px-2.5 py-1 bg-gray-100 text-gray-800 rounded uppercase tracking-wide">
-                            {app.status}
-                          </span>
+                          {app.status === "PENDING" && (
+                            <span className="text-xs font-bold px-2.5 py-1 bg-yellow-100 text-yellow-800 rounded uppercase tracking-wide">PENDING</span>
+                          )}
+                          {app.status === "INTERVIEW" && (
+                            <span className="text-xs font-bold px-2.5 py-1 bg-blue-100 text-blue-800 rounded uppercase tracking-wide">INTERVIEW</span>
+                          )}
+                          {app.status === "ACCEPTED" && (
+                            <span className="text-xs font-bold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded uppercase tracking-wide">ACCEPTED</span>
+                          )}
+                          {app.status === "REJECTED" && (
+                            <span className="text-xs font-bold px-2.5 py-1 bg-red-100 text-red-800 rounded uppercase tracking-wide">REJECTED</span>
+                          )}
                         </div>
 
                         <div className="mt-2 space-y-3">
@@ -129,8 +138,27 @@ export default async function MyJobsPage(props: { searchParams: Promise<{ succes
                         <div className="mt-5 flex gap-3 pt-4 border-t border-gray-50">
                           {job.status === "OPEN" && app.status === "PENDING" && (
                             <div className="flex gap-2">
+                              <form action={moveToInterview}>
+                                <input type="hidden" name="appId" value={app.id} />
+                                <button type="submit" className="text-xs font-bold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow shadow-blue-200 transition">
+                                  Pindah ke Interview
+                                </button>
+                              </form>
                               <Link href={`/jobs/${job.slug}/escrow/${app.id}`} className="text-xs font-bold px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 shadow shadow-emerald-200 transition">
-                                Terima & Setor Escrow
+                                Terima &amp; Setor Escrow
+                              </Link>
+                              <form action={rejectApplication}>
+                                <input type="hidden" name="appId" value={app.id} />
+                                <button type="submit" className="text-xs font-bold px-4 py-2 border border-red-200 text-red-600 rounded bg-red-50 hover:bg-red-100 transition">
+                                  Tolak
+                                </button>
+                              </form>
+                            </div>
+                          )}
+                          {job.status === "OPEN" && app.status === "INTERVIEW" && (
+                            <div className="flex gap-2">
+                              <Link href={`/jobs/${job.slug}/escrow/${app.id}`} className="text-xs font-bold px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 shadow shadow-emerald-200 transition">
+                                Terima &amp; Setor Escrow
                               </Link>
                               <form action={rejectApplication}>
                                 <input type="hidden" name="appId" value={app.id} />

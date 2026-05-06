@@ -18,14 +18,15 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const unreadCount = await getUnreadMessagesCount();
+  // Jika query count gagal, jangan crash seluruh layout
+  const unreadCount = await getUnreadMessagesCount().catch(() => 0);
 
   const sessionUser = {
     name: user.name,
-    role: user.role,
-    balance: user.balance,
+    role: user.role as "FREELANCER" | "COMPANY",
+    balance: (user as any).balance ?? 0,
     avatarUrl: user.avatarUrl,
-    unreadCount, // Sisipkan ke data user
+    unreadCount,
   };
 
   return (

@@ -8,7 +8,9 @@ import {
   PlusCircle,
   LayoutDashboard,
   LogOut,
-  UserCircle
+  UserCircle,
+  Clock,
+  Megaphone
 } from "lucide-react";
 import { logoutUser } from "@/app/actions/logout";
 import { useTransition } from "react";
@@ -32,11 +34,13 @@ export default function Sidebar({ role, onClose }: SidebarProps) {
   const navItems = [
     { name: "Papan Lowongan", href: "/jobs", icon: Briefcase },
     { name: "Kotak Pesan", href: "/chat", icon: MessageSquare },
+    { name: "Riwayat Transaksi", href: "/history", icon: Clock },
   ];
 
   if (role === "COMPANY") {
     navItems.push({ name: "Dashboard Pelamar", href: "/jobs/my-jobs", icon: LayoutDashboard });
     navItems.push({ name: "Post Lowongan", href: "/jobs/create", icon: PlusCircle });
+    navItems.push({ name: "Pasang Iklan", href: "/ads", icon: Megaphone });
   }
 
   // Active state styling using White/Blue/Orange/Green combination
